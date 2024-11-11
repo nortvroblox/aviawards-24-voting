@@ -24,6 +24,6 @@
 		"source.fixAll.eslint": "always",
 		"source.organizeImports": "never"
 	},
-    "npm.packageManager": "pnpm",
-    "nuxt.isNuxtApp": false
+	"npm.packageManager": "pnpm",
+	"nuxt.isNuxtApp": false
 }

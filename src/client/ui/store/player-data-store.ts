@@ -1,11 +1,10 @@
-import categories from 'shared/categories';
 import { DATA_TEMPLATE, type Data } from '../../../shared/data-template';
 import { create } from "../../../shared/modules/zustand";
 
 type PlayerDataStore = {
     playerData: Data;
     setPlayerData: (data: Data) => void;
-    setCategoryVotePref: (category: keyof typeof categories, vote: keyof (typeof categories)[typeof category]['options'] | false) => void;
+    setCategoryVotePref: (category: string, vote: string | false) => void;
 };
 
 export const usePlayerDataStore = create<PlayerDataStore>(
@@ -16,7 +15,7 @@ export const usePlayerDataStore = create<PlayerDataStore>(
             print("Setting player data", data);
             set({ playerData: data });
         },
-        setCategoryVotePref: (category: keyof typeof categories, vote: keyof (typeof categories)[typeof category]['options'] | false) => {
+        setCategoryVotePref: (category: string, vote: string | false) => {
             set((state) => {
                 const newPlayerData = { ...state.playerData, voted: { ...state.playerData.voted, [category]: vote } };
                 return { playerData: newPlayerData };

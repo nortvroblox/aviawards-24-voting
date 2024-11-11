@@ -30,9 +30,7 @@ const CardHolder = React.memo(
 		const setCategoryVotePref = usePlayerDataStore(state => state.setCategoryVotePref);
 		const playerData = usePlayerDataStore(state => state.playerData);
 		const setPopupMessage = usePopupStore(state => state.setPopupMessage);
-		const [lastCategory, setLastCategory] = useState<keyof typeof categories | undefined>(
-			undefined,
-		);
+		const [lastCategory, setLastCategory] = useState<string | undefined>(undefined);
 		const selectedCategory = useSelectedCategoryStore(state => state.selectedCategory);
 		const categoryData = categories[props.category];
 
