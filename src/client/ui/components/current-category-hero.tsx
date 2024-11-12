@@ -1,10 +1,9 @@
 import Object from "@rbxts/object-utils";
 import React from "@rbxts/react";
 
-import categories from "shared/categories";
-
 import { springs } from "../constants/springs";
 import { useMotion } from "../hooks";
+import { useCategoriesStore } from "../store/categories-store";
 import { useSelectedCategoryStore } from "../store/selected-category-store";
 import { defaultTheme, fonts } from "../themes";
 
@@ -87,6 +86,7 @@ const CategoryDescription = React.memo(
 );
 
 const CurrentCategoryHero = React.memo((props: Readonly<Props>) => {
+    const categories = useCategoriesStore(state => state.categories);
 	return (
 		<frame
 			AutomaticSize={Enum.AutomaticSize.Y}
@@ -97,7 +97,7 @@ const CurrentCategoryHero = React.memo((props: Readonly<Props>) => {
 				return (
 					<CategoryDescription
 						key={category}
-						category={category}
+						category={category as string}
 						data={data}
 					/>
 				);

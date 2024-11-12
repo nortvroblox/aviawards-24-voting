@@ -1,6 +1,7 @@
 import type { LoadedController } from "client/player/loaded-controller";
 import { $NODE_ENV } from "rbxts-transform-env";
 
+import type CategoriesController from "./categories-controller";
 import type ConfettiController from "./confetti-controller";
 
 export function reactConfig(): void {
@@ -18,6 +19,7 @@ export function reactConfig(): void {
 }
 
 export async function createApp(environment: {
+	categoriesController: CategoriesController;
 	confettiController: ConfettiController;
 	loadedController: LoadedController;
 }): Promise<void> {

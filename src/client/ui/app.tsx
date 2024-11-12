@@ -1,11 +1,12 @@
 import Object from "@rbxts/object-utils";
 import { useViewport } from "@rbxts/pretty-react-hooks";
 import React, { useState } from "@rbxts/react";
+import { RunService } from "@rbxts/services";
 
 import { Events, Functions } from "client/network";
-import categories from "shared/categories";
 
 import type { LoadedController } from "../player/loaded-controller";
+import type CategoriesController from "./categories-controller";
 import AviawardsBackground from "./components/avi-background";
 import Card from "./components/card";
 import CurrentCategoryHero from "./components/current-category-hero";
@@ -15,6 +16,7 @@ import Layer from "./components/primitive/layer";
 import Sidebar from "./components/sidebar";
 import type ConfettiController from "./confetti-controller";
 import { useMotion } from "./hooks";
+import { useCategoriesStore } from "./store/categories-store";
 import { usePlayerDataStore } from "./store/player-data-store";
 import { usePopupStore } from "./store/popup-store";
 import { useSelectedCategoryStore } from "./store/selected-category-store";
@@ -22,7 +24,7 @@ import { useSelectedCategoryStore } from "./store/selected-category-store";
 const CardHolder = React.memo(
 	(
 		props: Readonly<{
-			category: keyof typeof categories;
+			category: string;
 			confettiController: ConfettiController;
 			Native: Partial<React.InstanceProps<Frame>>;
 		}>,
@@ -32,43 +34,46 @@ const CardHolder = React.memo(
 		const setPopupMessage = usePopupStore(state => state.setPopupMessage);
 		const [lastCategory, setLastCategory] = useState<string | undefined>(undefined);
 		const selectedCategory = useSelectedCategoryStore(state => state.selectedCategory);
+		const categories = useCategoriesStore(state => state.categories);
 		const categoryData = categories[props.category];
 
-		const cards = Object.entries(categoryData.options).map(([cardName, cardData], index) => {
-			return (
-				<Card
-					key={`${props.category}-${cardName}`}
-					ButtonTweenDelay={index * 0.035}
-					Description={cardData.description}
-					Hidden={props.category !== selectedCategory}
-					Native={{
-						LayoutOrder: index,
-					}}
-					OnClick={() => {
-						print(`Clicked on ${cardName}`);
-						let isFirstVote = true;
-						// is any category not false? if so, then it's not the first vote
-						for (const category of Object.keys(playerData.voted)) {
-							if (playerData.voted[category] !== false) {
-								isFirstVote = false;
-								break;
+		const cards =
+			categoryData &&
+			Object.entries(categoryData.options).map(([cardName, cardData], index) => {
+				return (
+					<Card
+						key={`${props.category}-${cardName}`}
+						ButtonTweenDelay={index * 0.035}
+						Description={cardData.description}
+						Hidden={props.category !== selectedCategory}
+						Native={{
+							LayoutOrder: index,
+						}}
+						OnClick={() => {
+							print(`Clicked on ${cardName}`);
+							let isFirstVote = true;
+							// is any category not false? if so, then it's not the first vote
+							for (const category of Object.keys(playerData.voted)) {
+								if (playerData.voted[category] !== false) {
+									isFirstVote = false;
+									break;
+								}
 							}
-						}
 
-						if (isFirstVote) {
-							setPopupMessage(`You've made your first vote 🎉,  Keep going!`);
-							props.confettiController.runConfetti();
-						}
+							if (isFirstVote) {
+								setPopupMessage(`You've made your first vote 🎉,  Keep going!`);
+								props.confettiController.runConfetti();
+							}
 
-						print("Setting category vote pref", props.category, cardName);
-						setCategoryVotePref(props.category, cardName);
-					}}
-					Selected={playerData.voted[props.category] === cardName}
-					Thumbnail={cardData.image}
-					Title={cardName}
-				/>
-			);
-		});
+							print("Setting category vote pref", props.category, cardName);
+							setCategoryVotePref(props.category, cardName as string);
+						}}
+						Selected={playerData.voted[props.category] === cardName}
+						Thumbnail={cardData.image}
+						Title={cardName as string}
+					/>
+				);
+			});
 
 		React.useEffect(() => {
 			if (selectedCategory === lastCategory) {
@@ -106,6 +111,7 @@ const MenuUI = React.memo(
 			Native?: Partial<React.InstanceProps<Frame>>;
 		}>,
 	) => {
+		const categories = useCategoriesStore(state => state.categories);
 		const viewportSize = useViewport();
 		const [padding, setPadding] = useState(new UDim(0, 60));
 
@@ -134,7 +140,7 @@ const MenuUI = React.memo(
 									return (
 										<CardHolder
 											key={category}
-											category={category}
+											category={category as string}
 											confettiController={props.confettiController}
 											Native={{
 												key: category,
@@ -156,10 +162,15 @@ const MenuUI = React.memo(
 export function App({
 	env,
 }: Readonly<{
-	env: { confettiController: ConfettiController; loadedController: LoadedController };
+	env: {
+		categoriesController: CategoriesController;
+		confettiController: ConfettiController;
+		loadedController: LoadedController;
+	};
 }>): React.ReactNode {
 	const setPlayerData = usePlayerDataStore(state => state.setPlayerData);
 	const playerData = usePlayerDataStore(state => state.playerData);
+    const setCategories = useCategoriesStore(state => state.setCategoriesData);
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [isUsingReal, switchToReal] = useState(false);
 
@@ -185,6 +196,16 @@ export function App({
 		// you can't modify other people's data and we aren't storing any sensitive information
 		Events.SetPlayerData(playerData);
 	}, [playerData]);
+
+    React.useEffect(() => {
+        const updateLoop = RunService.Heartbeat.Connect(() => {
+            const categories = env.categoriesController.getCategories();
+            setCategories(categories);
+        });
+		return () => {
+            updateLoop.Disconnect();
+        };
+    }, [env.categoriesController, setCategories]);
 
 	return (
 		<Layer key="app">

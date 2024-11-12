@@ -2,7 +2,7 @@ import Object from "@rbxts/object-utils";
 import { useViewport } from "@rbxts/pretty-react-hooks";
 import React from "@rbxts/react";
 
-import Categories from "../../../shared/categories";
+import { useCategoriesStore } from "../store/categories-store";
 import { useSelectedCategoryStore } from "../store/selected-category-store";
 import { defaultTheme, fonts } from "../themes";
 import CategorySelectionButton from "./category-selection-button";
@@ -15,6 +15,7 @@ export interface Props<T extends Instance = Frame> {
 const CategoriesSelector = React.memo((props: Readonly<Props>) => {
 	const selectedCategory = useSelectedCategoryStore(state => state.selectedCategory);
 	const setSelectedCategory = useSelectedCategoryStore(state => state.setSelectedCategory);
+	const categories = useCategoriesStore(state => state.categories);
 	const viewport = useViewport();
 
 	return (
@@ -40,7 +41,7 @@ const CategoriesSelector = React.memo((props: Readonly<Props>) => {
 				AutomaticCanvasSize={Enum.AutomaticSize.X}
 				BackgroundTransparency={1}
 				BorderColor3={defaultTheme.colors.primary}
-				CanvasSize={new UDim2(0, 0, 0, 25 * Object.keys(Categories).size())}
+				CanvasSize={new UDim2(0, 0, 0, 25 * Object.keys(categories).size())}
 				Position={UDim2.fromOffset(0, 40)}
 				ScrollBarImageColor3={new Color3(1, 1, 1)}
 				ScrollBarThickness={3}
@@ -63,17 +64,17 @@ const CategoriesSelector = React.memo((props: Readonly<Props>) => {
 						SortOrder={Enum.SortOrder.LayoutOrder}
 					/>
 
-					{Object.entries(Categories).map(([category], index) => {
+					{Object.entries(categories).map(([category], index) => {
 						return (
 							<CategorySelectionButton
 								key={category}
 								EnterTweenDelay={0.05 * index}
-								Name={category}
+								Name={category as string}
 								Native={{
 									LayoutOrder: index,
 								}}
 								OnClick={() => {
-									setSelectedCategory(category);
+									setSelectedCategory(category as string);
 								}}
 								Selected={selectedCategory === category}
 							/>

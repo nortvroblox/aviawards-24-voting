@@ -1,22 +1,7 @@
+import { Categories } from "shared/categories";
 import { create } from "../../../shared/modules/zustand";
 
-type Nominations = {
-    [key: string]: {
-        description: string;
-        image: string;
-    };
-}
-
-type Category = {
-    options: Nominations;
-    description: string;
-}
-
-type Categories = {
-    [key: string]: Category;
-}
-
-type CategoriesStore = {
+export type CategoriesStore = {
     categories: Categories;
     setCategoriesData: (categories: Categories) => void;
 };

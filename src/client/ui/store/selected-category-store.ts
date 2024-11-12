@@ -7,7 +7,7 @@ type SelectedCategoryStore = {
 
 export const useSelectedCategoryStore = create<SelectedCategoryStore>(
 	(set) => ({
-		selectedCategory: "Best Event",
+		selectedCategory: "Best Tech Group",
 		setSelectedCategory: (category) => set({ selectedCategory: category }),
 	})
 );

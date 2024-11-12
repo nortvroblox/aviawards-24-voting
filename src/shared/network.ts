@@ -1,3 +1,4 @@
+import { Categories } from './categories';
 import type { Data } from './data-template';
 import { Networking } from "@flamework/networking";
 
@@ -16,6 +17,8 @@ interface ServerToClientFunctions {
 
 interface ClientToServerFunctions {
     GetPlayerData(): Data;
+    // GetCategories(): { [key: string]: { description: string; image: string } };
+    GetCategories(): Categories;
 }
 
 export const GlobalEvents = Networking.createEvent<
