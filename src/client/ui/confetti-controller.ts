@@ -3,7 +3,6 @@ import EmitYourParticleModule from "shared/modules/emit-your-particles";
 import type { Logger } from "@rbxts/log";
 import type { OnStart } from "@flamework/core";
 import { PLAYER_GUI } from "client/constants";
-import { UserInputService } from "@rbxts/services";
 
 const CONFETTI_COLORS = [
     Color3.fromRGB(255, 64, 64),
