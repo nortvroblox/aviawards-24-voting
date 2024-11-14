@@ -9,49 +9,53 @@ import { Categories, Category } from "shared/categories";
 const BACKEND_URL = $env.string("BACKEND_URL") ?? "";
 const AUTH_TOKEN = $env.string("AUTH_TOKEN") ?? "";
 
+type APIResponse = {
+    data: {
+        [key: string]: {
+            createdAt: string;
+            description: string | undefined;
+            documentId: string;
+            group: string;
+            id: number;
+            name: string;
+            votable: boolean;
+            nominations: [
+                {
+                    organization: {
+                        description: string | undefined;
+                        id: number;
+                        name: string;
+                        thumbnails: [
+                            {
+                                rbxAssetId: string;
+                            }
+                        ];
+                        updatedAt: string;
+                    }
+                }
+            ];
+            publishedAt: string;
+            updatedAt: string;
+        }
+    }
+}
+
 @Service({})
 export default class CategoriesService implements OnStart, OnInit {
     categories: Categories = {};
     constructor(private readonly logger: Logger) {}
 
-    public onInit(): void {
-        const categories = HttpService.JSONDecode(HttpService.RequestAsync({
+    private fetchCategories() {
+        return HttpService.JSONDecode(HttpService.RequestAsync({
             Url: BACKEND_URL + "/api/categories?populate[nominations][populate][organization][populate][thumbnails][populate]=*&populate[nominations][populate][organization][populate][logo][populate]=*",
             Method: "GET",
             Headers: {
                 Authorization: AUTH_TOKEN,
             },
-        }).Body) as {
-            data: {
-                [key: string]: {
-                    createdAt: string;
-                    description: string | undefined;
-                    documentId: string;
-                    group: string;
-                    id: number;
-                    name: string;
-                    votable: boolean;
-                    nominations: [
-                        {
-                            organization: {
-                                description: string | undefined;
-                                id: number;
-                                name: string;
-                                thumbnails: [
-                                    {
-                                        rbxAssetId: string;
-                                    }
-                                ];
-                                updatedAt: string;
-                            }
-                        }
-                    ];
-                    publishedAt: string;
-                    updatedAt: string;
-                }
-            }
-        }
-        this.logger.Info("Categories fetched", categories);
+        }).Body) as APIResponse;
+    }
+
+    private processCategories(categories: APIResponse) {
         const newCategories: { [key: string]: Category } = {};
         for (const [_, value] of pairs(categories.data)) {
             if (value.votable === false) continue;
@@ -67,7 +71,15 @@ export default class CategoriesService implements OnStart, OnInit {
             }
             newCategories[value.name] = category;
         }
-        this.categories = newCategories;
+        return newCategories;
+    }
+
+
+    public onInit(): void {
+        const categories = this.fetchCategories();
+        this.categories = this.processCategories(categories);
+
+        this.logger.Info("Categories fetched", this.categories);
     }
 
     public onStart(): void {

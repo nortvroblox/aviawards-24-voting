@@ -170,7 +170,7 @@ export function App({
 }>): React.ReactNode {
 	const setPlayerData = usePlayerDataStore(state => state.setPlayerData);
 	const playerData = usePlayerDataStore(state => state.playerData);
-    const setCategories = useCategoriesStore(state => state.setCategoriesData);
+	const setCategories = useCategoriesStore(state => state.setCategoriesData);
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [isUsingReal, switchToReal] = useState(false);
 
@@ -197,15 +197,21 @@ export function App({
 		Events.SetPlayerData(playerData);
 	}, [playerData]);
 
-    React.useEffect(() => {
-        const updateLoop = RunService.Heartbeat.Connect(() => {
-            const categories = env.categoriesController.getCategories();
-            setCategories(categories);
-        });
+	React.useEffect(() => {
+		let lastUpdate = 0;
+		const updateLoop = RunService.Heartbeat.Connect(() => {
+			if (os.clock() - lastUpdate < 2) {
+				return;
+			}
+
+			lastUpdate = os.clock();
+			const categories = env.categoriesController.getCategories();
+			setCategories(categories);
+		});
 		return () => {
-            updateLoop.Disconnect();
-        };
-    }, [env.categoriesController, setCategories]);
+			updateLoop.Disconnect();
+		};
+	}, [env.categoriesController, setCategories]);
 
 	return (
 		<Layer key="app">
