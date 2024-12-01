@@ -164,7 +164,7 @@ const TickAnimated = React.memo(
 		}, [tickOneSizeMotion, tickTwoSizeMotion, tickOnePositionMotion, tickTwoPositionMotion]);
 
 		return (
-			<frame BackgroundTransparency={1} Size={UDim2.fromOffset(250, 250)} {...props.Native}>
+			<frame BackgroundTransparency={1} Size={UDim2.fromScale(0.7, 0.7)} {...props.Native}>
 				<uiaspectratioconstraint />
 				<TickLine Position={tickOnePosition} Rotation={45} Size={tickOneSize} />
 				<TickLine Position={tickTwoPosition} Rotation={45} Size={tickTwoSize} />
