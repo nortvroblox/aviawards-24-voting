@@ -19,6 +19,10 @@ export class LoadedController implements OnStart {
 
 	public async onStart(): Promise<void> {
 		this.logger.Info("LoadedController started");
+        if (!game.IsLoaded()) {
+            game.Loaded.Wait();
+        }
+
 		while (!this.playerRemovalService.isNPCLoaded) {
 			RunService.Heartbeat.Wait();
 		}
