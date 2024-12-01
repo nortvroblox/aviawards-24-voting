@@ -15,6 +15,7 @@ import Group from "./components/primitive/group";
 import Layer from "./components/primitive/layer";
 import Sidebar from "./components/sidebar";
 import type ConfettiController from "./confetti-controller";
+import { playSoundEffect } from "./functions/play-sound-effect";
 import { useMotion } from "./hooks";
 import { useCategoriesStore } from "./store/categories-store";
 import { usePlayerDataStore } from "./store/player-data-store";
@@ -62,6 +63,7 @@ const CardHolder = React.memo(
 
 							if (isFirstVote) {
 								setPopupMessage(`You've made your first vote 🎉,  Keep going!`);
+								playSoundEffect("cheer");
 								props.confettiController.runConfetti();
 							}
 
