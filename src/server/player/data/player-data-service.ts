@@ -1,5 +1,5 @@
 import { Events, Functions } from "server/network";
-import { OnStart, Service } from "@flamework/core";
+import { OnInit, Service } from "@flamework/core";
 
 import { DATA_TEMPLATE } from "../../../shared/data-template";
 import type { Data } from "../../../shared/data-template";
@@ -18,7 +18,7 @@ export interface OnPlayerRemoved {
 }
 
 @Service({})
-export class PlayerDataService implements OnStart {
+export class PlayerDataService implements OnInit {
 	private readonly store = ProfileService.GetProfileStore(
 		"VotingStore",
 		DATA_TEMPLATE
@@ -83,7 +83,7 @@ export class PlayerDataService implements OnStart {
         }
 	}
 
-    onStart(): void {
+    onInit(): void {
         Functions.GetPlayerData.setCallback(async (player?) => {
             if (!player) {
                 return DATA_TEMPLATE;

@@ -3,6 +3,7 @@ import { useViewport } from "@rbxts/pretty-react-hooks";
 import React, { useState } from "@rbxts/react";
 import { RunService } from "@rbxts/services";
 
+import { LocalPlayer } from "client/constants";
 import { Events, Functions } from "client/network";
 
 import type { LoadedController } from "../player/loaded-controller";
@@ -175,6 +176,7 @@ export function App({
 	const setCategories = useCategoriesStore(state => state.setCategoriesData);
 	const [backgroundTransparency, backgroundTransparencyMotion] = useMotion(1);
 	const [isUsingReal, switchToReal] = useState(false);
+	const [hasFetchedPlayerData, setHasFetchedPlayerData] = useState(false);
 
 	React.useEffect(() => {
 		void env.loadedController.waitForLoad().then(() => {
@@ -187,9 +189,15 @@ export function App({
 	}, [backgroundTransparencyMotion, env.loadedController]);
 
 	React.useEffect(() => {
-		void Functions.GetPlayerData().then(data => {
-			setPlayerData(data);
-		});
+		Functions.GetPlayerData()
+			.then(data => {
+				setPlayerData(data);
+				setHasFetchedPlayerData(true);
+			})
+			.catch(() => {
+				warn("Failed to get player data");
+				LocalPlayer.Kick("Player data fetch failed! Please try again.");
+			});
 	}, [setPlayerData]);
 
 	React.useEffect(() => {
@@ -197,7 +205,7 @@ export function App({
 		// if you ruin your own data, that's on you lol
 		// you can't modify other people's data and we aren't storing any sensitive information
 		Events.SetPlayerData(playerData);
-	}, [playerData]);
+	}, [playerData, hasFetchedPlayerData]);
 
 	React.useEffect(() => {
 		let lastUpdate = 0;

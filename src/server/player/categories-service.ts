@@ -41,7 +41,7 @@ type APIResponse = {
 }
 
 @Service({})
-export default class CategoriesService implements OnStart, OnInit {
+export default class CategoriesService implements OnInit {
     categories: Categories = {};
     constructor(private readonly logger: Logger) {}
 
@@ -80,9 +80,6 @@ export default class CategoriesService implements OnStart, OnInit {
         this.categories = this.processCategories(categories);
 
         this.logger.Info("Categories fetched", this.categories);
-    }
-
-    public onStart(): void {
         Functions.GetCategories.setCallback((player) => {
             return this.categories;
         });
