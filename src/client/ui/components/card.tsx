@@ -210,7 +210,7 @@ function Card({
 						<DefaultTextPadding />
 					</textlabel>
 
-					<textlabel
+					{/* <textlabel
 						BackgroundTransparency={1}
 						FontFace={fonts.primaryConstructed.regular}
 						Position={new UDim2(0, 0, 1, -25)}
@@ -224,7 +224,7 @@ function Card({
 						Visible={viewportSize.map(value => value.Y > 500)}
 					>
 						<DefaultTextPadding />
-					</textlabel>
+					</textlabel> */}
 				</frame>
 
 				{Thumbnail !== undefined ? (
