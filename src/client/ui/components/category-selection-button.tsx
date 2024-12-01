@@ -110,7 +110,7 @@ const CategorySelectionButton = React.memo((props: Readonly<Props>) => {
 	}, [buttonTransparencyMotion, buttonXPositionOffsetMotion, props.EnterTweenDelay]);
 
 	return (
-		<frame BackgroundTransparency={1} Size={new UDim2(1, 0, 0, 25)}>
+		<frame BackgroundTransparency={1} Size={new UDim2(1, 0, 0, 25)} {...props.Native}>
 			<textbutton
 				BackgroundTransparency={1}
 				Event={{

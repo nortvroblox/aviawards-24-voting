@@ -64,14 +64,16 @@ const CategoriesSelector = React.memo((props: Readonly<Props>) => {
 						SortOrder={Enum.SortOrder.LayoutOrder}
 					/>
 
-					{Object.entries(categories).map(([category], index) => {
+					{Object.entries(categories).map(([category]) => {
+						const categoryData = categories[category] as { order: number } | undefined;
+						const order = categoryData ? categoryData.order : 100;
 						return (
 							<CategorySelectionButton
 								key={category}
-								EnterTweenDelay={0.05 * index}
+								EnterTweenDelay={0.05 * order}
 								Name={category as string}
 								Native={{
-									LayoutOrder: index,
+									LayoutOrder: order,
 								}}
 								OnClick={() => {
 									setSelectedCategory(category as string);

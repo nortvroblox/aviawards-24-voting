@@ -19,6 +19,7 @@ type APIResponse = {
             id: number;
             name: string;
             votable: boolean;
+            order: number | undefined;
             nominations: [
                 {
                     organization: {
@@ -62,6 +63,7 @@ export default class CategoriesService implements OnInit {
             const category = {
                 description: value.description ?? "",
                 options: {} as Category["options"],
+                order: value.order ?? 0,
             };
             for (const nomination of value.nominations) {
                 category.options[nomination.organization.name] = {
