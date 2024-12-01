@@ -6,6 +6,7 @@ import type { NPCController } from "./npc-controller";
 import type { OnStart } from "@flamework/core";
 import assets from "shared/assets";
 import { LocalPlayer } from "client/constants";
+import { Functions } from "client/network";
 
 @Controller()
 export class LoadedController implements OnStart {
@@ -16,7 +17,7 @@ export class LoadedController implements OnStart {
 		private readonly playerRemovalService: NPCController
 	) {}
 
-	public onStart(): void {
+	public async onStart(): Promise<void> {
 		this.logger.Info("LoadedController started");
 		while (!this.playerRemovalService.isNPCLoaded) {
 			RunService.Heartbeat.Wait();
@@ -41,6 +42,19 @@ export class LoadedController implements OnStart {
         const votingMusic = Workspace.WaitForChild('VotingMusic') as Sound;
         votingMusic.Parent = LocalPlayer.WaitForChild('PlayerGui') as ScreenGui;
         votingMusic.Play();
+
+        // Functions.GetPlayerData()
+        let getPlayerDataExists = false;
+        while (!getPlayerDataExists) {
+            try {
+                const playerData = await Functions.GetPlayerData();
+                this.logger.Info("Player data: ", playerData);
+                getPlayerDataExists = true;
+            } catch (e) {
+                warn(e);
+                wait(5);
+            }
+        }
 
 		this.logger.Info("LoadedController finished");
 		this.isLoaded = true;

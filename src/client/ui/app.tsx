@@ -189,22 +189,39 @@ export function App({
 	}, [backgroundTransparencyMotion, env.loadedController]);
 
 	React.useEffect(() => {
-		Functions.GetPlayerData()
-			.then(data => {
-				setPlayerData(data);
-				setHasFetchedPlayerData(true);
-			})
-			.catch((err: unknown) => {
-				warn("Failed to get player data");
-				print(err);
+		const updatePlayerData = async (): Promise<void> => {
+			let success = false;
+			while (!success) {
+				try {
+					const data = await Functions.GetPlayerData();
+					setPlayerData(data);
+					setHasFetchedPlayerData(true);
+					success = true;
+					print("Player data fetched successfully");
+				} catch (err) {
+					warn("Failed to get player data");
+					print(err);
+					wait(1);
+				}
+			}
+		};
+
+		task.spawn(() => {
+			updatePlayerData().catch(() => {
 				LocalPlayer.Kick("Player data fetch failed! Please try again.");
 			});
+		});
 	}, [setPlayerData]);
 
 	React.useEffect(() => {
 		// we don't need any validation
 		// if you ruin your own data, that's on you lol
 		// you can't modify other people's data and we aren't storing any sensitive information
+		// Events.SetPlayerData(playerData);
+		if (!hasFetchedPlayerData) {
+			return;
+		}
+
 		Events.SetPlayerData(playerData);
 	}, [playerData, hasFetchedPlayerData]);
 
