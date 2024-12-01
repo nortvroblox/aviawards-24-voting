@@ -2,6 +2,7 @@ import { useViewport } from "@rbxts/pretty-react-hooks";
 import React from "@rbxts/react";
 
 import { springs } from "../constants/springs";
+import { playSoundEffect } from "../functions/play-sound-effect";
 import { useMotion } from "../hooks";
 import { defaultTheme, fonts } from "../themes";
 import TickAnimated from "./tick-animated";
@@ -131,7 +132,10 @@ function Card({
 				BorderSizePixel={0}
 				ClipsDescendants={true}
 				Event={{
-					MouseButton1Click: OnClick,
+					MouseButton1Click: () => {
+						playSoundEffect("click");
+						OnClick?.();
+					},
 					MouseButton1Down: () => {
 						setPressed(true);
 					},
@@ -139,6 +143,7 @@ function Card({
 						setPressed(false);
 					},
 					MouseEnter: () => {
+						playSoundEffect("hover");
 						setHovered(true);
 						setPressed(false);
 					},

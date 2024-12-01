@@ -1,6 +1,7 @@
 import React from "@rbxts/react";
 
 import { springs } from "../constants/springs";
+import { playSoundEffect } from "../functions/play-sound-effect";
 import { useMotion } from "../hooks/use-motion";
 import { usePlayerDataStore } from "../store/player-data-store";
 import { defaultTheme, fonts } from "../themes";
@@ -113,11 +114,15 @@ const CategorySelectionButton = React.memo((props: Readonly<Props>) => {
 			<textbutton
 				BackgroundTransparency={1}
 				Event={{
-					MouseButton1Click: props.OnClick,
+                    MouseButton1Click: () => {
+                        playSoundEffect("click");
+                        props.OnClick?.();
+                    },
 					MouseEnter: () => {
 						setIsHovering(true);
 					},
 					MouseLeave: () => {
+                        playSoundEffect("hover");
 						setIsHovering(false);
 					},
 				}}
