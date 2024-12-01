@@ -63,7 +63,9 @@ const CardHolder = React.memo(
 							}
 
 							if (isFirstVote) {
-								setPopupMessage(`You've made your first vote 🎉,  Keep going!`);
+								setPopupMessage(
+									`You've made your first vote 🎉,  Keep going! (Don't worry, your vote is automatically saved)`,
+								);
 								playSoundEffect("cheer");
 								props.confettiController.runConfetti();
 							}
