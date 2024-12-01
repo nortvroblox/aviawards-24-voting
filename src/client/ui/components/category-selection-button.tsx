@@ -75,7 +75,7 @@ const CategorySelectionButton = React.memo((props: Readonly<Props>) => {
 		}
 
 		const shouldHighlight =
-			playerData.voted[props.Name as keyof typeof playerData.voted] !== false || isHovering;
+			!!playerData.voted[props.Name as keyof typeof playerData.voted] || isHovering;
 
 		if (props.Selected) {
 			buttonColorMotion.spring(defaultTheme.colors.primary, springs.responsive);
