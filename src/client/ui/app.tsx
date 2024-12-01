@@ -194,8 +194,9 @@ export function App({
 				setPlayerData(data);
 				setHasFetchedPlayerData(true);
 			})
-			.catch(() => {
+			.catch((err: unknown) => {
 				warn("Failed to get player data");
+				print(err);
 				LocalPlayer.Kick("Player data fetch failed! Please try again.");
 			});
 	}, [setPlayerData]);

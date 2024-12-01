@@ -1,10 +1,11 @@
-import { ContentProvider, RunService } from "@rbxts/services";
+import { ContentProvider, RunService, Workspace } from "@rbxts/services";
 
 import { Controller } from "@flamework/core";
 import type { Logger } from "@rbxts/log";
 import type { NPCController } from "./npc-controller";
 import type { OnStart } from "@flamework/core";
 import assets from "shared/assets";
+import { LocalPlayer } from "client/constants";
 
 @Controller()
 export class LoadedController implements OnStart {
@@ -36,6 +37,10 @@ export class LoadedController implements OnStart {
 		recursiveAdd(assets);
 		ContentProvider.PreloadAsync(assetIds);
 		this.logger.Info("Assets preloaded");
+
+        const votingMusic = Workspace.WaitForChild('VotingMusic') as Sound;
+        votingMusic.Parent = LocalPlayer.WaitForChild('PlayerGui') as ScreenGui;
+        votingMusic.Play();
 
 		this.logger.Info("LoadedController finished");
 		this.isLoaded = true;
