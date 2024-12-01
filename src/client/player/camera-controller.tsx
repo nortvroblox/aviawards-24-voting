@@ -1,29 +1,23 @@
 /* eslint-disable @cspell/spellchecker -- This is a false positive, "Scriptable" is a valid term in Roblox Lua */
 import type { OnInit, OnStart } from "@flamework/core";
-import React, { StrictMode } from "@rbxts/react";
-import {
-	RunService,
-	TweenService,
-	UserInputService,
-	Workspace,
-} from "@rbxts/services";
-import { createPortal, createRoot } from "@rbxts/react-roblox";
-
 import { Controller } from "@flamework/core";
-import type { LoadedController } from "./loaded-controller";
+import React, { StrictMode } from "@rbxts/react";
+import { createPortal, createRoot } from "@rbxts/react-roblox";
+import { RunService, TweenService, UserInputService, Workspace } from "@rbxts/services";
+
 import PhysicalLoadingUI from "client/ui/components/physical-loading-ui";
+
+import type { LoadedController } from "./loaded-controller";
 
 const FALLBACK_FOV = 40;
 const FULL_ANGLE = 180;
-// eslint-disable-next-line ts/no-magic-numbers -- It's half
+
 const HALF_ANGLE = FULL_ANGLE / 2;
 const MOUSE_AFFECT_MODIFIER = 0.05;
 const LERP_SPEED = 2;
 
-// eslint-disable-next-line ts/no-magic-numbers -- Artistic choice, is magic number
 const INIT_CAMERA_OFFSET = new CFrame(0, 10, 0).mul(
-	// eslint-disable-next-line ts/no-magic-numbers -- Artistic choice, is magic number
-	CFrame.Angles(math.rad(130), math.rad(15), math.rad(15))
+	CFrame.Angles(math.rad(130), math.rad(15), math.rad(15)),
 );
 
 @Controller()
@@ -58,8 +52,8 @@ export class CameraController implements OnStart, OnInit {
 						<PhysicalLoadingUI />
 					</surfacegui>
 				</StrictMode>,
-				physicalLoadingUIPart
-			)
+				physicalLoadingUIPart,
+			),
 		);
 
 		const cameraRefPart = Workspace.WaitForChild("CameraPart") as Part;
@@ -75,10 +69,7 @@ export class CameraController implements OnStart, OnInit {
 		cameraRefPart.Parent = undefined;
 	}
 
-	private getLoadingUICFrame(
-		baseCFrame: CFrame,
-		cameraAngle?: CFrame
-	): CFrame {
+	private getLoadingUICFrame(baseCFrame: CFrame, cameraAngle?: CFrame): CFrame {
 		return baseCFrame
 			.mul(INIT_CAMERA_OFFSET)
 			.mul(cameraAngle ?? new CFrame(0, 0, 0))
@@ -91,8 +82,7 @@ export class CameraController implements OnStart, OnInit {
 		const updateCameraProperties: () => void = () => {
 			this.camera.CameraType = Enum.CameraType.Scriptable;
 			this.camera.FieldOfView =
-				tonumber(this.cameraRefPart.GetAttribute("FieldOfView")) ??
-				FALLBACK_FOV;
+				tonumber(this.cameraRefPart.GetAttribute("FieldOfView")) ?? FALLBACK_FOV;
 		};
 
 		this.camera.GetPropertyChangedSignal("CameraType").Connect(() => {
@@ -105,20 +95,16 @@ export class CameraController implements OnStart, OnInit {
 		this.camera.CFrame = baseCFrame.mul(INIT_CAMERA_OFFSET);
 
 		// put in a temp cframevalue
-		let cameraBaseCFrameTemp = new Instance("CFrameValue");
-		cameraBaseCFrameTemp.Value = baseCFrame.mul(INIT_CAMERA_OFFSET);
+		let cameraBaseCFrameTemporary = new Instance("CFrameValue");
+		cameraBaseCFrameTemporary.Value = baseCFrame.mul(INIT_CAMERA_OFFSET);
 
 		void this.loadedController.waitForLoad().then(() => {
 			TweenService.Create(
-				cameraBaseCFrameTemp,
-				new TweenInfo(
-					2,
-					Enum.EasingStyle.Quint,
-					Enum.EasingDirection.InOut
-				),
+				cameraBaseCFrameTemporary,
+				new TweenInfo(2, Enum.EasingStyle.Quint, Enum.EasingDirection.InOut),
 				{
 					Value: baseCFrame,
-				}
+				},
 			).Play();
 		});
 
@@ -135,27 +121,25 @@ export class CameraController implements OnStart, OnInit {
 
 				const angle = new Vector2(
 					(mousePosition.Y / screenSize.Y) * FULL_ANGLE - HALF_ANGLE,
-					(mousePosition.X / screenSize.X) * FULL_ANGLE - HALF_ANGLE
+					(mousePosition.X / screenSize.X) * FULL_ANGLE - HALF_ANGLE,
 				);
 
 				cameraAngle = cameraAngle.Lerp(
 					CFrame.Angles(
 						math.rad(angle.X * MOUSE_AFFECT_MODIFIER),
 						math.rad(angle.Y * MOUSE_AFFECT_MODIFIER),
-						0
+						0,
 					),
-					LERP_SPEED * dt
+					LERP_SPEED * dt,
 				);
 
-				this.camera.CFrame =
-					cameraBaseCFrameTemp.Value.mul(cameraAngle);
+				this.camera.CFrame = cameraBaseCFrameTemporary.Value.mul(cameraAngle);
 
-				this.physicalLoadingUIPart.CFrame =
-					this.physicalLoadingUIPart.CFrame.Lerp(
-						this.getLoadingUICFrame(baseCFrame, cameraAngle),
-						LERP_SPEED * dt
-					);
-			}
+				this.physicalLoadingUIPart.CFrame = this.physicalLoadingUIPart.CFrame.Lerp(
+					this.getLoadingUICFrame(baseCFrame, cameraAngle),
+					LERP_SPEED * dt,
+				);
+			},
 		);
 	}
 }
